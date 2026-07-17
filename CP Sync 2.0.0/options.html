@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CP Sync</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="icons/icon48.png" alt="" />
+      <div class="header-text">
+        <h1>CP Sync</h1>
+        <p class="sub">Sync accepted solutions to GitHub</p>
+      </div>
+      <button id="popOutBtn" class="pop-out-btn" title="Open in a full tab so it stays open while you switch tabs">Open in tab</button>
+      <label class="switch" title="Turn syncing on or off">
+        <input type="checkbox" id="masterToggle" checked />
+        <span class="slider"></span>
+      </label>
+    </header>
+    <p id="masterState" class="master-state">Active</p>
+
+    <div class="stat-strip">
+      <div class="stat">
+        <span class="stat-value" id="streakValue">0</span>
+        <span class="stat-label">Day streak</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="totalValue">0</span>
+        <span class="stat-label">Total synced</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="failedValue">0</span>
+        <span class="stat-label">Pending retry</span>
+      </div>
+    </div>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="general">General</button>
+      <button class="tab-btn" data-tab="manual">Manual Push</button>
+      <button class="tab-btn" data-tab="history">History</button>
+      <button class="tab-btn" data-tab="advanced">Advanced</button>
+    </nav>
+
+    <!-- GENERAL TAB -->
+    <section class="tab-panel active" id="tab-general">
+      <label for="token">GitHub Personal Access Token</label>
+      <input type="password" id="token" placeholder="github_pat_xxxxxxxxxxxxxxxxxxxxxxxx" />
+      <p class="hint">
+        Needs Contents: Read and write on the target repo.
+        <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">Create one here.</a>
+      </p>
+
+      <div class="row">
+        <div>
+          <label for="owner">GitHub Username / Org</label>
+          <input type="text" id="owner" placeholder="yourusername" />
+        </div>
+        <div>
+          <label for="repo">Repository</label>
+          <input type="text" id="repo" placeholder="competitive-programming" />
+        </div>
+      </div>
+
+      <label for="branch">Branch</label>
+      <input type="text" id="branch" placeholder="main" />
+
+      <label>Platforms to sync</label>
+      <div class="checks">
+        <label><input type="checkbox" data-platform="codeforces" /> Codeforces</label>
+        <label><input type="checkbox" data-platform="codechef" /> CodeChef</label>
+        <label><input type="checkbox" data-platform="leetcode" /> LeetCode</label>
+        <label><input type="checkbox" data-platform="neetcode" /> NeetCode</label>
+        <label><input type="checkbox" data-platform="hackerrank" /> HackerRank</label>
+        <label><input type="checkbox" data-platform="vjudge" /> vJudge</label>
+        <label><input type="checkbox" data-platform="atcoder" /> AtCoder</label>
+      </div>
+      <label class="checkbox-inline" style="margin-top:8px">
+        <input type="checkbox" id="otherJudgesEnabled" /> Allow other/custom judges (Manual Push)
+      </label>
+
+      <div class="actions">
+        <button id="save">Save Settings</button>
+        <button id="test" class="secondary">Test Connection</button>
+      </div>
+      <p id="generalStatus" class="status"></p>
+    </section>
+
+    <!-- MANUAL PUSH TAB -->
+    <section class="tab-panel" id="tab-manual">
+      <p class="hint" style="margin-top:0">
+        Use this when auto-detection misses a submission, or to push from a judge that isn't built in yet.
+      </p>
+
+      <div class="actions small-actions" style="margin-top:0; margin-bottom:14px">
+        <button id="autofillBtn" type="button" class="secondary small">Autofill</button>
+        <button id="clearAllBtn" type="button" class="secondary small">Clear All</button>
+      </div>
+      <p class="hint" style="margin-top:-6px; margin-bottom:14px">
+        Autofill reads the problem name, link, ID, and rating/difficulty off whichever judge page is open in your active tab - just paste your code after.
+      </p>
+
+      <div class="row">
+        <div>
+          <label for="mPlatform">Platform</label>
+          <select id="mPlatform">
+            <option value="codeforces">Codeforces</option>
+            <option value="codechef">CodeChef</option>
+            <option value="leetcode">LeetCode</option>
+            <option value="neetcode">NeetCode</option>
+            <option value="hackerrank">HackerRank</option>
+            <option value="vjudge">vJudge</option>
+            <option value="atcoder">AtCoder</option>
+            <option value="other">Other / Custom Judge</option>
+          </select>
+        </div>
+        <div>
+          <label for="mLanguage">Language</label>
+          <select id="mLanguage">
+            <option>C</option>
+            <option>C++17</option>
+            <option>Python3</option>
+            <option>Java</option>
+            <option>JavaScript</option>
+            <option>TypeScript</option>
+            <option>Go</option>
+            <option>Rust</option>
+            <option>Kotlin</option>
+            <option>C#</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="mOtherLanguageWrap" style="display:none">
+        <label for="mOtherLanguage">Language name</label>
+        <input type="text" id="mOtherLanguage" placeholder="e.g. Racket, Pascal, Dart" />
+      </div>
+
+      <div id="mOtherWrap" style="display:none">
+        <label for="mOtherName">Judge name</label>
+        <input type="text" id="mOtherName" placeholder="e.g. SPOJ, Toph, USACO Guide" />
+        <p class="hint">Used as the top-level folder name in your repo.</p>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="mProblemId">Problem ID / slug</label>
+          <input type="text" id="mProblemId" placeholder="e.g. 1873A or two-sum" />
+        </div>
+        <div>
+          <label for="mGroup">Rating / Contest / Folder</label>
+          <input type="text" id="mGroup" placeholder="e.g. 1500 or Weekly-Contest-300" />
+        </div>
+      </div>
+
+      <label for="mProblemName">Problem name</label>
+      <input type="text" id="mProblemName" placeholder="e.g. Two Sum" />
+
+      <label for="mUrl">Problem / submission URL (optional)</label>
+      <input type="text" id="mUrl" placeholder="https://..." />
+
+      <label for="mCode">Code</label>
+      <textarea id="mCode" rows="8" placeholder="Paste your accepted solution here"></textarea>
+
+      <div class="actions">
+        <button id="manualPush">Push to GitHub</button>
+      </div>
+      <p id="manualStatus" class="status"></p>
+    </section>
+
+    <!-- HISTORY TAB -->
+    <section class="tab-panel" id="tab-history">
+      <div class="history-toolbar">
+        <button id="retryFailed" class="secondary small">Retry failed</button>
+        <button id="clearHistory" class="secondary small">Clear history</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <p class="hint">No pushes yet.</p>
+      </div>
+    </section>
+
+    <!-- ADVANCED TAB -->
+    <section class="tab-panel" id="tab-advanced">
+      <label for="commitTemplate">Commit message template</label>
+      <input type="text" id="commitTemplate" placeholder="Solved: {problem} ({platform})" />
+      <p class="hint">Placeholders: <code>{problem}</code> <code>{platform}</code> <code>{contest}</code> <code>{rating}</code> <code>{language}</code></p>
+
+      <label class="checkbox-inline">
+        <input type="checkbox" id="skipDuplicates" /> Skip pushing if the code is byte-identical to what's already committed
+      </label>
+
+      <div class="actions">
+        <button id="saveAdvanced">Save</button>
+      </div>
+      <p id="advancedStatus" class="status"></p>
+
+      <hr />
+
+      <label>Backup settings (token is never exported)</label>
+      <div class="actions">
+        <button id="exportSettings" class="secondary">Export settings</button>
+        <button id="importSettingsBtn" class="secondary">Import settings</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none" />
+      <p id="importExportStatus" class="status"></p>
+    </section>
+
+    <footer>
+      Folder layout: <code>&lt;platform&gt;/&lt;rating-or-contest&gt;/&lt;problem&gt;.ext</code>
+    </footer>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

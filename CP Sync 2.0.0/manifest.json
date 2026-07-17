@@ -1,0 +1,89 @@
+
+
+{
+  "manifest_version": 3,
+  "name": "CP Sync",
+  "version": "2.0.0",
+  "description": "Sync your Accepted submissions from online judges (like Codeforces, Codechef, Leetcode etc) to GitHub automatically.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "minimum_chrome_version": "111",
+  "permissions": ["storage", "unlimitedStorage", "activeTab", "scripting", "notifications"],
+  "host_permissions": [
+    "https://codeforces.com/*",
+    "https://*.codeforces.com/*",
+    "https://www.codechef.com/*",
+    "https://*.codechef.com/*",
+    "https://leetcode.com/*",
+    "https://neetcode.io/*",
+    "https://www.hackerrank.com/*",
+    "https://vjudge.net/*",
+    "https://atcoder.jp/*",
+    "https://api.github.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "options.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://codeforces.com/*", "https://*.codeforces.com/*"],
+      "js": ["content_scripts/codeforces.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.codechef.com/*", "https://*.codechef.com/*"],
+      "js": ["content_scripts/editor_hook.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://www.codechef.com/*", "https://*.codechef.com/*"],
+      "js": ["content_scripts/codechef.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["content_scripts/leetcode.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://neetcode.io/*"],
+      "js": ["content_scripts/neetcode.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.hackerrank.com/*"],
+      "js": ["content_scripts/hackerrank.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": ["https://vjudge.net/*"],
+      "js": ["content_scripts/vjudge.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://atcoder.jp/*"],
+      "js": ["content_scripts/atcoder.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
